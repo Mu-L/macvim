@@ -344,7 +344,10 @@
 #endif
 #ifdef BACKSLASH_IN_FILENAME
 # define PATH_ESC_CHARS ((char_u *)" \t\n*?[{`%#'\"|!<")
-# define BUFFER_ESC_CHARS ((char_u *)" \t\n*?[`%#'\"|!<")
+// '%' and '#' are not escaped for ":buffer": it has no EX_XFILE, so they are
+// not expanded, and escaping them as "\%"/"\#" breaks buffer name matching
+// when '%'/'#' is in 'isfname' (backslash treated as a path separator).
+# define BUFFER_ESC_CHARS ((char_u *)" \t\n*?[`'\"|!<")
 #else
 # ifdef VMS
     // VMS allows a lot of characters in the file name
@@ -698,7 +701,8 @@ extern int (*dyn_libintl_wputenv)(const wchar_t *envstring);
 #define POPUP_HANDLED_2	    0x02    // used by popup_do_filter()
 #define POPUP_HANDLED_3	    0x04    // used by popup_check_cursor_pos()
 #define POPUP_HANDLED_4	    0x08    // used by may_update_popup_mask()
-#define POPUP_HANDLED_5	    0x10    // used by update_popups()
+#define POPUP_HANDLED_5	    0x10    // used by update_popups() and
+				    // update_popup_images()
 
 /*
  * Terminal highlighting attribute bits.
@@ -869,7 +873,8 @@ extern int (*dyn_libintl_wputenv)(const wchar_t *envstring);
 #define EXPAND_FILETYPECMD	63
 #define EXPAND_PATTERN_IN_BUF	64
 #define EXPAND_RETAB		65
-#define EXPAND_MACACTION	66
+#define EXPAND_USER_COMPLETEOPT	66
+#define EXPAND_MACACTION	67
 
 
 // Values for exmode_active (0 is no exmode)
@@ -3095,6 +3100,10 @@ long elapsed(DWORD start_tick);
 // flags used by user commands and :autocmd
 #define UC_BUFFER	1	// -buffer: local to current buffer
 #define UC_VIM9		2	// {} argument: Vim9 syntax.
+
+// flags for the -completeopt= attribute of :command
+#define UCC_ESCAPE	0x1	// escape spaces, tabs and backslashes in
+				// matches
 
 // flags used by vim_strsave_fnameescape()
 #define VSE_NONE	0

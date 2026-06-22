@@ -1327,7 +1327,7 @@ channel_parse_socketserver_address(
     if (*address == NUL)
 	goto fail;
 
-    if (!STRNCMP(address, "unix:", 5))
+    if (STRNCMP(address, "unix:", 5) == 0)
     {
 	*unix_path = vim_strsave(address + 5);
 	return OK;
@@ -1380,7 +1380,7 @@ channel_open_func(typval_T *argvars)
 	return NULL;
     }
 
-    if (!STRNCMP(address, "unix:", 5))
+    if (STRNCMP(address, "unix:", 5) == 0)
     {
 	is_unix = TRUE;
 	address += 5;
@@ -1477,7 +1477,7 @@ channel_listen_func(typval_T *argvars)
 	return NULL;
     }
 
-    if (!STRNCMP(arg, "unix:", 5))
+    if (STRNCMP(arg, "unix:", 5) == 0)
     {
 	is_unix = TRUE;
 	arg += 5;

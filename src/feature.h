@@ -1151,7 +1151,11 @@
 #endif
 
 #if defined(FEAT_IMAGE) && defined(FEAT_GUI_GTK)
-# define FEAT_IMAGE_CAIRO
+# ifdef USE_GTK4_SNAPSHOT
+#  define FEAT_IMAGE_GDK
+# else
+#  define FEAT_IMAGE_CAIRO
+# endif
 #endif
 
 /*

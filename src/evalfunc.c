@@ -7296,6 +7296,13 @@ f_has(typval_T *argvars, typval_T *rettv)
 		0
 #endif
 		},
+	{"image_gdk",
+#ifdef FEAT_IMAGE_GDK
+		1
+#else
+		0
+#endif
+		},
 	{"image_kitty",
 #ifdef FEAT_IMAGE_KITTY
 		1

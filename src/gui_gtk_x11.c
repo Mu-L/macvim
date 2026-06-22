@@ -814,7 +814,7 @@ scale_factor_event(GtkWidget *widget,
     gtk_window_get_size(GTK_WINDOW(gui.mainwin), &w, &h);
     gui.surface = gdk_window_create_similar_surface(
 	    gtk_widget_get_window(widget),
-	    CAIRO_CONTENT_COLOR_ALPHA,
+	    CAIRO_CONTENT_COLOR,
 	    w, h);
 
     int	    usable_height = h;
@@ -2900,7 +2900,7 @@ drawarea_realize_cb(GtkWidget *widget, gpointer data UNUSED)
 #if GTK_CHECK_VERSION(3,0,0)
     gui.surface = gdk_window_create_similar_surface(
 	    gtk_widget_get_window(widget),
-	    CAIRO_CONTENT_COLOR_ALPHA,
+	    CAIRO_CONTENT_COLOR,
 	    gtk_widget_get_allocated_width(widget),
 	    gtk_widget_get_allocated_height(widget));
 #else
@@ -3035,7 +3035,7 @@ drawarea_configure_event_cb(GtkWidget	      *widget,
 
     gui.surface = gdk_window_create_similar_surface(
 	    gtk_widget_get_window(widget),
-	    CAIRO_CONTENT_COLOR_ALPHA,
+	    CAIRO_CONTENT_COLOR,
 	    event->width, event->height);
 
     gtk_widget_queue_draw(widget);
@@ -7035,16 +7035,23 @@ gui_mch_draw_popup_image(
     if (wp->w_popup_image_data == NULL
 	    || wp->w_popup_image_w <= 0 || wp->w_popup_image_h <= 0
 	    || draw_w <= 0 || draw_h <= 0
-	    || gui.surface == NULL)
+# if GTK_CHECK_VERSION(3,0,0)
+	    || gui.surface == NULL
+# endif
+       )
 	return;
 
     x = FILL_X(col);
     y = FILL_Y(row);
+# if GTK_CHECK_VERSION(3,0,0)
     cairo_popup_image_paint(wp, gui.surface, x, y,
-					    src_x, src_y, draw_w, draw_h);
-
+	    src_x, src_y, draw_w, draw_h);
     if (gui.drawarea != NULL)
 	gtk_widget_queue_draw_area(gui.drawarea, x, y, draw_w, draw_h);
+# else
+    cairo_popup_image_paint(wp, gui.drawarea->window, x, y,
+	    src_x, src_y, draw_w, draw_h);
+# endif
 }
 #endif // FEAT_IMAGE_CAIRO
 
